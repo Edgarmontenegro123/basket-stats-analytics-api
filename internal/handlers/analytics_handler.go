@@ -53,6 +53,11 @@ func processAnalytics(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if upload.Status == "processed" {
+		http.Error(w, "upload already processed", http.StatusBadRequest)
+		return
+	}
+
 	mockStats := []models.PlayerStats{
 		{
 			ID:         generateID(),
