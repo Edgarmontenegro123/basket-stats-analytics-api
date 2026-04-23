@@ -3,12 +3,13 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/Edgarmontenegro123/basket-stats-analytics-api/internal/models"
 )
 
-var Uploads []models.StatUpload
+var uploads []models.StatUpload
 
 type createUploadRequest struct {
 	GameID   string `json:"game_id"`
@@ -22,6 +23,15 @@ func UploadsHandler(w http.ResponseWriter, r *http.Request) {
 		createUpload(w, r)
 	case http.MethodGet:
 		listUploads(w, r)
+	default:
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+	}
+}
+
+func UploadByIDHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodGet:
+		getUploadByID(w, r)
 	default:
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 	}
@@ -60,15 +70,41 @@ func createUpload(w http.ResponseWriter, r *http.Request) {
 		UploadedAt: time.Now(),
 	}
 
-	Uploads = append(Uploads, upload)
+	uploads = append(uploads, upload)
 
 	writeJSON(w, http.StatusCreated, upload)
 }
 
 func listUploads(w http.ResponseWriter, _ *http.Request) {
-	if Uploads == nil {
-		Uploads = []models.StatUpload{}
+	if uploads == nil {
+		uploads = []models.StatUpload{}
 	}
 
-	writeJSON(w, http.StatusOK, Uploads)
+	writeJSON(w, http.StatusOK, uploads)
+}
+
+func getUploadByID(w http.ResponseWriter, r *http.Request) {
+	uploadID := strings.TrimPrefix(r.URL.Path, "/uploads/")
+	if uploadID == "" {
+		http.Error(w, "upload id is required", http.StatusBadRequest)
+		return
+	}
+
+	upload, found := findUploadByID(uploadID)
+	if !found {
+		http.Error(w, "upload not found", http.StatusNotFound)
+		return
+	}
+
+	writeJSON(w, http.StatusOK, upload)
+}
+
+func findUploadByID(uploadID string) (models.StatUpload, bool) {
+	for _, upload := range uploads {
+		if upload.ID == uploadID {
+			return upload, true
+		}
+	}
+
+	return models.StatUpload{}, false
 }
