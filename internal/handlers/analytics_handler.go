@@ -163,7 +163,7 @@ func listPlayerStatsByGameID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	filteredStats := []models.PlayerStats{}
+	var filteredStats []models.PlayerStats
 
 	for _, stat := range playerStats {
 		if stat.GameID == gameID {
@@ -183,7 +183,7 @@ func listTeamStatsByGameID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	filteredStats := []models.TeamStat{}
+	var filteredStats []models.TeamStat
 
 	for _, stat := range teamStats {
 		if stat.GameID == gameID {
