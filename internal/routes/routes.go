@@ -13,5 +13,5 @@ func RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/uploads/", handlers.UploadByIDHandler)
 
 	mux.HandleFunc("/analytics/process", handlers.ProcessAnalyticsHandler)
-	mux.HandleFunc("/analytics/games/", handlers.GamePlayerStatsHandler)
+	mux.HandleFunc("/analytics/games/", handlers.GameStatsRouter)
 }
