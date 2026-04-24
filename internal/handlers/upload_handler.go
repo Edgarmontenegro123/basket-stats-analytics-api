@@ -61,6 +61,18 @@ func createUpload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if req.FileType != "pdf" {
+		http.Error(w, "file_type must be pdf", http.StatusBadRequest)
+		return
+	}
+
+	for _, u := range uploads {
+		if u.GameID == req.GameID {
+			http.Error(w, "upload already exists for this game_id", http.StatusBadRequest)
+			return
+		}
+	}
+
 	upload := models.StatUpload{
 		ID:         generateID(),
 		GameID:     req.GameID,
