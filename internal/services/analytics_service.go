@@ -1,10 +1,13 @@
 package services
 
 import (
+	"errors"
 	"time"
 
 	"github.com/Edgarmontenegro123/basket-stats-analytics-api/internal/models"
 )
+
+var ErrUploadAlreadyProcessed = errors.New("upload already processed")
 
 func GenerateMockAnalytics(gameID string, generateID func() string) ([]models.PlayerStats, []models.TeamStat) {
 	now := time.Now()
@@ -60,4 +63,12 @@ func GenerateMockAnalytics(gameID string, generateID func() string) ([]models.Pl
 	}
 
 	return playerStats, teamStats
+}
+
+func ValidateUploadStatus(upload models.StatUpload) error {
+	if upload.Status == "processed" {
+		return ErrUploadAlreadyProcessed
+	}
+
+	return nil
 }

@@ -78,8 +78,9 @@ func processAnalytics(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if upload.Status == "processed" {
-		http.Error(w, "upload already processed", http.StatusBadRequest)
+	err = services.ValidateUploadStatus(upload)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
