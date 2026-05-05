@@ -72,3 +72,14 @@ func ValidateUploadStatus(upload models.StatUpload) error {
 
 	return nil
 }
+
+func ProcessAnalytics(upload models.StatUpload, generateID func() string) ([]models.PlayerStats, []models.TeamStat, error) {
+	err := ValidateUploadStatus(upload)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	playerStats, teamStats := GenerateMockAnalytics(upload.GameID, generateID)
+
+	return playerStats, teamStats, nil
+}

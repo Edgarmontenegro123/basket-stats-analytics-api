@@ -78,13 +78,11 @@ func processAnalytics(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = services.ValidateUploadStatus(upload)
+	mockStats, mockTeamStats, err := services.ProcessAnalytics(upload, generateID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-
-	mockStats, mockTeamStats := services.GenerateMockAnalytics(upload.GameID, generateID)
 
 	playerStats = append(playerStats, mockStats...)
 	teamStats = append(teamStats, mockTeamStats...)
