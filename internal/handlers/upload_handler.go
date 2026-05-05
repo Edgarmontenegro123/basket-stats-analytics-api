@@ -64,7 +64,8 @@ func createUpload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	filePath := filepath.Join(uploadsDir, fileHeader.Filename)
+	storedFileName := generateID() + "_" + fileHeader.Filename
+	filePath := filepath.Join(uploadsDir, storedFileName)
 
 	destination, err := os.Create(filePath)
 	if err != nil {
@@ -102,7 +103,7 @@ func createUpload(w http.ResponseWriter, r *http.Request) {
 	upload := models.StatUpload{
 		ID:         generateID(),
 		GameID:     gameID,
-		FileName:   fileHeader.Filename,
+		FileName:   storedFileName,
 		FileType:   "pdf",
 		FilePath:   filePath,
 		Status:     "uploaded",
