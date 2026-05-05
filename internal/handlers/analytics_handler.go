@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/Edgarmontenegro123/basket-stats-analytics-api/internal/models"
+	"github.com/Edgarmontenegro123/basket-stats-analytics-api/internal/services"
 )
 
 var playerStats []models.PlayerStats
@@ -82,55 +83,7 @@ func processAnalytics(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	mockStats := []models.PlayerStats{
-		{
-			ID:         generateID(),
-			GameID:     upload.GameID,
-			TeamName:   "Almendra Basketball",
-			PlayerName: "Edgar Montenegro",
-			Points:     17,
-			Rebounds:   1,
-			Assists:    1,
-			CreatedAt:  time.Now(),
-			UpdatedAt:  time.Now(),
-		},
-		{
-			ID:         generateID(),
-			GameID:     upload.GameID,
-			TeamName:   "Almendra Basketball",
-			PlayerName: "Nicolás Landoni",
-			Points:     18,
-			Rebounds:   14,
-			Assists:    1,
-			CreatedAt:  time.Now(),
-			UpdatedAt:  time.Now(),
-		},
-	}
-
-	mockTeamStats := []models.TeamStat{
-		{
-			ID:        generateID(),
-			GameID:    upload.GameID,
-			TeamName:  "Almendra Basketball",
-			Points:    35,
-			Rebounds:  51,
-			Assists:   4,
-			Turnovers: 17,
-			CreatedAt: time.Now(),
-			UpdatedAt: time.Now(),
-		},
-		{
-			ID:        generateID(),
-			GameID:    upload.GameID,
-			TeamName:  "Pegasos",
-			Points:    47,
-			Rebounds:  46,
-			Assists:   9,
-			Turnovers: 12,
-			CreatedAt: time.Now(),
-			UpdatedAt: time.Now(),
-		},
-	}
+	mockStats, mockTeamStats := services.GenerateMockAnalytics(upload.GameID, generateID)
 
 	playerStats = append(playerStats, mockStats...)
 	teamStats = append(teamStats, mockTeamStats...)
