@@ -93,6 +93,15 @@ func ProcessAnalytics(upload models.StatUpload, uploads []models.StatUpload, gen
 		_ = file.Close()
 	}()
 
+	pdfText, err := ExtractTextFromPDF(upload.FilePath)
+	if err != nil {
+		return nil, nil, uploads, errors.New("error extracting text from pdf")
+	}
+
+	if pdfText == "" {
+		return nil, nil, uploads, errors.New("pdf text is empty")
+	}
+
 	playerStats, teamStats := GenerateMockAnalytics(upload.GameID, generateID)
 
 	for i := range uploads {
