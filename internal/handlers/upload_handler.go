@@ -1,7 +1,10 @@
 package handlers
 
 import (
+	"io"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -52,6 +55,32 @@ func createUpload(w http.ResponseWriter, r *http.Request) {
 	defer func() {
 		_ = file.Close()
 	}()
+
+	uploadsDir := "uploads"
+
+	err = os.MkdirAll(uploadsDir, os.ModePerm)
+	if err != nil {
+		http.Error(w, "error creating uploads directory", http.StatusInternalServerError)
+		return
+	}
+
+	filePath := filepath.Join(uploadsDir, fileHeader.Filename)
+
+	destination, err := os.Create(filePath)
+	if err != nil {
+		http.Error(w, "error creating file", http.StatusInternalServerError)
+		return
+	}
+
+	defer func() {
+		_ = destination.Close()
+	}()
+
+	_, err = io.Copy(destination, file)
+	if err != nil {
+		http.Error(w, "error saving file", http.StatusInternalServerError)
+		return
+	}
 
 	if fileHeader.Filename == "" {
 		http.Error(w, "file_name is required", http.StatusBadRequest)
