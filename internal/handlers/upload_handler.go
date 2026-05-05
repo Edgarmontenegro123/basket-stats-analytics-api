@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"encoding/json"
 	"net/http"
 	"strings"
 	"time"
@@ -10,12 +9,6 @@ import (
 )
 
 var uploads []models.StatUpload
-
-type createUploadRequest struct {
-	GameID   string `json:"game_id"`
-	FileName string `json:"file_name"`
-	FileType string `json:"file_type"`
-}
 
 func UploadsHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
@@ -38,36 +31,40 @@ func UploadByIDHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func createUpload(w http.ResponseWriter, r *http.Request) {
-	var req createUploadRequest
-
-	err := json.NewDecoder(r.Body).Decode(&req)
+	err := r.ParseMultipartForm(10 << 20)
 	if err != nil {
-		http.Error(w, "invalid request body", http.StatusBadRequest)
+		http.Error(w, "invalid multipart form", http.StatusBadRequest)
 		return
 	}
 
-	if req.GameID == "" {
+	gameID := r.FormValue("game_id")
+	if gameID == "" {
 		http.Error(w, "game_id is required", http.StatusBadRequest)
 		return
 	}
 
-	if req.FileName == "" {
+	file, fileHeader, err := r.FormFile("file")
+	if err != nil {
+		http.Error(w, "file is required", http.StatusBadRequest)
+		return
+	}
+
+	defer func() {
+		_ = file.Close()
+	}()
+
+	if fileHeader.Filename == "" {
 		http.Error(w, "file_name is required", http.StatusBadRequest)
 		return
 	}
 
-	if req.FileType == "" {
-		http.Error(w, "file_type is required", http.StatusBadRequest)
-		return
-	}
-
-	if req.FileType != "pdf" {
-		http.Error(w, "file_type must be pdf", http.StatusBadRequest)
+	if !strings.HasSuffix(strings.ToLower(fileHeader.Filename), ".pdf") {
+		http.Error(w, "file must be a pdf", http.StatusBadRequest)
 		return
 	}
 
 	for _, u := range uploads {
-		if u.GameID == req.GameID {
+		if u.GameID == gameID {
 			http.Error(w, "upload already exists for this game_id", http.StatusBadRequest)
 			return
 		}
@@ -75,9 +72,9 @@ func createUpload(w http.ResponseWriter, r *http.Request) {
 
 	upload := models.StatUpload{
 		ID:         generateID(),
-		GameID:     req.GameID,
-		FileName:   req.FileName,
-		FileType:   req.FileType,
+		GameID:     gameID,
+		FileName:   fileHeader.Filename,
+		FileType:   "pdf",
 		Status:     "uploaded",
 		UploadedAt: time.Now(),
 	}
