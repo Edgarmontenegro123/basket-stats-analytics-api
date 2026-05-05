@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/Edgarmontenegro123/basket-stats-analytics-api/internal/models"
 	"github.com/Edgarmontenegro123/basket-stats-analytics-api/internal/services"
@@ -78,22 +77,16 @@ func processAnalytics(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	mockStats, mockTeamStats, err := services.ProcessAnalytics(upload, generateID)
+	mockStats, mockTeamStats, updatedUploads, err := services.ProcessAnalytics(upload, uploads, generateID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
+	uploads = updatedUploads
+
 	playerStats = append(playerStats, mockStats...)
 	teamStats = append(teamStats, mockTeamStats...)
-
-	for i := range uploads {
-		if uploads[i].ID == upload.ID {
-			uploads[i].Status = "processed"
-			uploads[i].ProcessedAt = time.Now()
-			break
-		}
-	}
 
 	response := map[string]any{
 		"message":                "analytics processed successfully",
