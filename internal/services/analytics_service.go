@@ -91,3 +91,27 @@ func ProcessAnalytics(upload models.StatUpload, uploads []models.StatUpload, gen
 
 	return playerStats, teamStats, uploads, nil
 }
+
+func GetPlayerStatsByGameID(stats []models.PlayerStats, gameID string) []models.PlayerStats {
+	var filteredStats []models.PlayerStats
+
+	for _, stat := range stats {
+		if stat.GameID == gameID {
+			filteredStats = append(filteredStats, stat)
+		}
+	}
+
+	return filteredStats
+}
+
+func GetTeamStatsByGameID(stats []models.TeamStat, gameID string) []models.TeamStat {
+	var filteredStats []models.TeamStat
+
+	for _, stat := range stats {
+		if stat.GameID == gameID {
+			filteredStats = append(filteredStats, stat)
+		}
+	}
+
+	return filteredStats
+}

@@ -108,13 +108,7 @@ func listPlayerStatsByGameID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var filteredStats []models.PlayerStats
-
-	for _, stat := range playerStats {
-		if stat.GameID == gameID {
-			filteredStats = append(filteredStats, stat)
-		}
-	}
+	filteredStats := services.GetPlayerStatsByGameID(playerStats, gameID)
 
 	writeJSON(w, http.StatusOK, filteredStats)
 }
@@ -128,13 +122,7 @@ func listTeamStatsByGameID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var filteredStats []models.TeamStat
-
-	for _, stat := range teamStats {
-		if stat.GameID == gameID {
-			filteredStats = append(filteredStats, stat)
-		}
-	}
+	filteredStats := services.GetTeamStatsByGameID(teamStats, gameID)
 
 	writeJSON(w, http.StatusOK, filteredStats)
 }
