@@ -2,6 +2,7 @@ package services
 
 import (
 	"errors"
+	"os"
 	"time"
 
 	"github.com/Edgarmontenegro123/basket-stats-analytics-api/internal/models"
@@ -78,6 +79,19 @@ func ProcessAnalytics(upload models.StatUpload, uploads []models.StatUpload, gen
 	if err != nil {
 		return nil, nil, uploads, err
 	}
+
+	if upload.FilePath == "" {
+		return nil, nil, uploads, errors.New("file path is required")
+	}
+
+	file, err := os.Open(upload.FilePath)
+	if err != nil {
+		return nil, nil, uploads, errors.New("uploaded file not found")
+	}
+
+	defer func() {
+		_ = file.Close()
+	}()
 
 	playerStats, teamStats := GenerateMockAnalytics(upload.GameID, generateID)
 

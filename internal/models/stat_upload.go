@@ -7,6 +7,7 @@ type StatUpload struct {
 	GameID      string    `json:"game_id"`
 	FileName    string    `json:"file_name"`
 	FileType    string    `json:"file_type"`
+	FilePath    string    `json:"file_path"`
 	Status      string    `json:"status"`
 	UploadedAt  time.Time `json:"uploaded_at"`
 	ProcessedAt time.Time `json:"processed_at,omitempty"`

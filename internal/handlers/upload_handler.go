@@ -104,6 +104,7 @@ func createUpload(w http.ResponseWriter, r *http.Request) {
 		GameID:     gameID,
 		FileName:   fileHeader.Filename,
 		FileType:   "pdf",
+		FilePath:   filePath,
 		Status:     "uploaded",
 		UploadedAt: time.Now(),
 	}
