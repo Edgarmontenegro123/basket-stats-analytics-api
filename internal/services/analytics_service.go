@@ -2,7 +2,6 @@ package services
 
 import (
 	"errors"
-	"fmt"
 	"os"
 	"time"
 
@@ -95,8 +94,7 @@ func ProcessAnalytics(upload models.StatUpload, uploads []models.StatUpload, gen
 	}()
 
 	pdfText, err := ExtractTextFromPDF(upload.FilePath)
-	fmt.Println("----- PDF TEXT -----")
-	fmt.Println(pdfText)
+
 	if err != nil {
 		return nil, nil, uploads, errors.New("error extracting text from pdf")
 	}
