@@ -2,6 +2,7 @@ package services
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"time"
 
@@ -111,7 +112,7 @@ func ProcessAnalytics(upload models.StatUpload, uploads []models.StatUpload, gen
 	playerStats := ParsePlayerStatsFromText(pdfText, upload.GameID)
 
 	for i := range playerStats {
-		playerStats[i].ID = generateID()
+		playerStats[i].ID = fmt.Sprintf("%s-%d", generateID(), i+1)
 	}
 
 	for i := range uploads {

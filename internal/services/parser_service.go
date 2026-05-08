@@ -126,10 +126,17 @@ func ParsePlayerStatsFromText(text string, gameID string) []models.PlayerStats {
 
 	isMainPlayerTable := false
 
+	currentTeamName := ""
+
 	for i := 0; i < len(lines); i++ {
 		line := strings.TrimSpace(lines[i])
 
 		if line == "" {
+			continue
+		}
+
+		if line == "Almendra Basketball" || line == "Pegasos" {
+			currentTeamName = line
 			continue
 		}
 
@@ -198,7 +205,7 @@ func ParsePlayerStatsFromText(text string, gameID string) []models.PlayerStats {
 			playerStats = append(playerStats, models.PlayerStats{
 				ID:         "",
 				GameID:     gameID,
-				TeamName:   "",
+				TeamName:   currentTeamName,
 				PlayerName: fullName,
 				Points:     points,
 				Rebounds:   rebounds,
