@@ -2,6 +2,7 @@ package services
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"time"
 
@@ -94,6 +95,8 @@ func ProcessAnalytics(upload models.StatUpload, uploads []models.StatUpload, gen
 	}()
 
 	pdfText, err := ExtractTextFromPDF(upload.FilePath)
+	fmt.Println("----- PDF TEXT -----")
+	fmt.Println(pdfText)
 	if err != nil {
 		return nil, nil, uploads, errors.New("error extracting text from pdf")
 	}
@@ -102,7 +105,12 @@ func ProcessAnalytics(upload models.StatUpload, uploads []models.StatUpload, gen
 		return nil, nil, uploads, errors.New("pdf text is empty")
 	}
 
-	playerStats, teamStats := GenerateMockAnalytics(upload.GameID, generateID)
+	teamStats, err := ParseTeamStatsFromText(pdfText, upload.GameID, generateID)
+	if err != nil {
+		return nil, nil, uploads, err
+	}
+
+	playerStats, _ := GenerateMockAnalytics(upload.GameID, generateID)
 
 	for i := range uploads {
 		if uploads[i].ID == upload.ID {
