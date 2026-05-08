@@ -108,7 +108,11 @@ func ProcessAnalytics(upload models.StatUpload, uploads []models.StatUpload, gen
 		return nil, nil, uploads, err
 	}
 
-	playerStats, _ := GenerateMockAnalytics(upload.GameID, generateID)
+	playerStats := ParsePlayerStatsFromText(pdfText, upload.GameID)
+
+	for i := range playerStats {
+		playerStats[i].ID = generateID()
+	}
 
 	for i := range uploads {
 		if uploads[i].ID == upload.ID {

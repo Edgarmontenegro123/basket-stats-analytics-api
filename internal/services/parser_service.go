@@ -3,6 +3,7 @@ package services
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -116,4 +117,96 @@ func ParseTeamStatsFromText(text string, gameID string, generateID func() string
 	}
 
 	return teamStats, nil
+}
+
+func ParsePlayerStatsFromText(text string, gameID string) []models.PlayerStats {
+	lines := strings.Split(text, "\n")
+
+	var playerStats []models.PlayerStats
+
+	isMainPlayerTable := false
+
+	for i := 0; i < len(lines); i++ {
+		line := strings.TrimSpace(lines[i])
+
+		if line == "" {
+			continue
+		}
+
+		if line == "MIN" {
+			isMainPlayerTable = true
+			continue
+		}
+
+		if line == "Total" {
+			isMainPlayerTable = false
+			continue
+		}
+
+		if !isMainPlayerTable {
+			continue
+		}
+
+		cleanLine := strings.TrimSpace(line)
+		cleanLine = strings.TrimPrefix(cleanLine, "*")
+		cleanLine = strings.TrimSpace(cleanLine)
+
+		if strings.HasPrefix(cleanLine, ".") {
+			playerNumber := ""
+
+			if i-1 >= 0 {
+				playerNumber = strings.TrimSpace(lines[i-1])
+			}
+
+			nameParts := []string{strings.TrimPrefix(cleanLine, ".")}
+
+			j := i + 1
+			for j+2 < len(lines) {
+				current := strings.TrimSpace(lines[j])
+				next := strings.TrimSpace(lines[j+1])
+
+				if next == ":" {
+					break
+				}
+
+				nameParts = append(nameParts, current)
+				j++
+			}
+
+			fullName := strings.Join(nameParts, " ")
+
+			pointsIndex := j + 3
+			points := 0
+			rebounds := 0
+			assists := 0
+
+			reboundsIndex := pointsIndex + 15
+			assistsIndex := pointsIndex + 16
+
+			if pointsIndex < len(lines) {
+				points, _ = strconv.Atoi(strings.TrimSpace(lines[pointsIndex]))
+			}
+
+			if reboundsIndex < len(lines) {
+				rebounds, _ = strconv.Atoi(strings.TrimSpace(lines[reboundsIndex]))
+			}
+
+			if assistsIndex < len(lines) {
+				assists, _ = strconv.Atoi(strings.TrimSpace(lines[assistsIndex]))
+			}
+
+			playerStats = append(playerStats, models.PlayerStats{
+				ID:         "",
+				GameID:     gameID,
+				TeamName:   "",
+				PlayerName: fullName,
+				Points:     points,
+				Rebounds:   rebounds,
+				Assists:    assists,
+			})
+			fmt.Println("Jugador: ", playerNumber, "-", fullName, "- PTS: ", points, "-REB: ", rebounds, "-AST: ", assists)
+		}
+	}
+
+	return playerStats
 }
