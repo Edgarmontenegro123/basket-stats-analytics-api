@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/Edgarmontenegro123/basket-stats-analytics-api/internal/models"
+	"github.com/Edgarmontenegro123/basket-stats-analytics-api/internal/services"
 )
 
 var uploads []models.StatUpload
@@ -41,6 +42,13 @@ func createUpload(w http.ResponseWriter, r *http.Request) {
 	}
 
 	gameID := r.FormValue("game_id")
+
+	err = services.ValidateGameExists(gameID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
 	if gameID == "" {
 		http.Error(w, "game_id is required", http.StatusBadRequest)
 		return

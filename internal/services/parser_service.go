@@ -210,6 +210,8 @@ func ParsePlayerStatsFromText(text string, gameID string) []models.PlayerStats {
 				Points:     points,
 				Rebounds:   rebounds,
 				Assists:    assists,
+				CreatedAt:  time.Now(),
+				UpdatedAt:  time.Now(),
 			})
 			fmt.Println("Jugador: ", playerNumber, "-", fullName, "- PTS: ", points, "-REB: ", rebounds, "-AST: ", assists)
 		}
